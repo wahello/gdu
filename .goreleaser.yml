@@ -1,0 +1,81 @@
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+      - arm64
+      - mips
+    goarm:
+      - 5
+      - 6
+      - 7
+    gomips:
+      - hardfloat
+      - softfloat
+    main: ./cmd/gdu
+    flags:
+      - -buildmode=pie
+      - -trimpath
+      - -mod=readonly
+      - -modcacherw
+    ldflags:
+      - -s -w -extldflags '-static'
+      - -X 'github.com/dundee/gdu/v5/build.Version={{.Version}}'
+      - -X 'github.com/dundee/gdu/v5/build.User=goreleaser'
+      - -X 'github.com/dundee/gdu/v5/build.Time={{.Date}}'
+  - id: bsd
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - freebsd
+      - openbsd
+      - netbsd
+    goarch:
+      - 386
+      - amd64
+      - arm
+      - arm64
+      - mips
+    goarm:
+      - 5
+      - 6
+      - 7
+    gomips:
+      - hardfloat
+      - softfloat
+    main: ./cmd/gdu
+    flags:
+      - -trimpath
+      - -mod=readonly
+      - -modcacherw
+    ldflags:
+      - -s -w -extldflags '-static'
+      - -X 'github.com/dundee/gdu/v5/build.Version={{.Version}}'
+      - -X 'github.com/dundee/gdu/v5/build.User=goreleaser'
+      - -X 'github.com/dundee/gdu/v5/build.Time={{.Date}}'
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
